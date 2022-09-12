@@ -4,11 +4,12 @@ import (
 	"flag"
 	"log"
 
-	"example/CoffeShop/internal/app/apiserver"
+	"github.com/Hisimoto/COFFESHOP/internal/app/apiserver"
 
 	"github.com/BurntSushi/toml"
 )
-//test com
+
+// test com
 var (
 	configPath string
 )
@@ -22,7 +23,7 @@ func main() {
 
 	config := apiserver.NewConfig()
 	_, err := toml.DecodeFile(configPath, config)
-	
+
 	if err != nil {
 		log.Fatal(err)
 	}

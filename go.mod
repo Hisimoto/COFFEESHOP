@@ -1,4 +1,4 @@
-module example/CoffeShop
+module github.com/Hisimoto/COFFESHOP
 
 go 1.19
 
