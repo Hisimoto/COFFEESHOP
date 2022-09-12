@@ -4,9 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/Hisimoto/COFFESHOP/internal/app/apiserver"
-
 	"github.com/BurntSushi/toml"
+	"github.com/Hisimoto/COFFEESHOP/internal/app/apiserver"
 )
 
 // test com

@@ -1,5 +1,3 @@
-module github.com/Hisimoto/COFFESHOP
+module github.com/Hisimoto/COFFEESHOP
 
 go 1.19
-
-require github.com/BurntSushi/toml v1.2.0
