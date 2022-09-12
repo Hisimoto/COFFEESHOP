@@ -8,7 +8,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 )
-
+//test com
 var (
 	configPath string
 )
