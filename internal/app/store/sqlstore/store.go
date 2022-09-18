@@ -7,8 +7,9 @@ import (
 )
 
 type Store struct {
-	db             *sql.DB
-	UserRepository *UserRepository
+	db              *sql.DB
+	UserRepository  *UserRepository
+	OrderRepository *OrderRepository
 }
 
 func New(db *sql.DB) *Store {
@@ -27,6 +28,18 @@ func (s *Store) User() store.UserRepository {
 	}
 
 	return s.UserRepository
+}
+
+func (s *Store) Order() store.OrderRepository {
+	if s.OrderRepository != nil {
+		return s.OrderRepository
+	}
+
+	s.OrderRepository = &OrderRepository{
+		store: s,
+	}
+
+	return s.OrderRepository
 }
 
 /*func (s integ) BuyACoffee() *UserRepository {

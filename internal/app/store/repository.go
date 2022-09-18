@@ -1,10 +1,18 @@
 package store
 
-import "github.com/Hisimoto/COFFEESHOP/internal/app/model"
+import (
+	"github.com/Hisimoto/COFFEESHOP/internal/app/model"
+	"time"
+)
 
 type UserRepository interface {
 	Create(*model.User) error
 	FindByEmail(string) (*model.User, error)
-	CountCoffeByTypeAndUserId(int) (int, error)
-	GetNumbersOfCoffeeByTypeAndUserId(int) (int, error)
+	GetNumbersOfCoffeeByTypeAndUserId(int, int) (int, error)
+}
+
+type OrderRepository interface {
+	CreateOrder(*model.Order, int) error
+	CountCoffeByTypeAndUserId(int, int) (int, error)
+	CheckRemainingTime(int, int) (time.Time, error)
 }
