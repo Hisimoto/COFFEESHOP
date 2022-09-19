@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 type server struct {
@@ -44,6 +45,7 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
+		r.Header.Get("ID")
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 			s.error(w, r, http.StatusBadRequest, err)
 			return
@@ -74,6 +76,7 @@ func (s *server) handleUsersGet() http.HandlerFunc {
 			s.error(w, r, http.StatusBadRequest, err)
 			return
 		}
+
 		u := &model.User{
 			ID:             req.ID,
 			Email:          req.Email,
@@ -90,21 +93,20 @@ func (s *server) handleUsersGet() http.HandlerFunc {
 }
 
 func (s *server) buyCoffee() http.HandlerFunc {
-	type request struct {
-		ID         int `json:"ID"`
-		CoffeeType int `json:"coffeeType"`
-	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		req := &request{}
-		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			s.error(w, r, http.StatusBadRequest, err)
-			return
+		var u model.Order
+
+		if x, err := strconv.Atoi(r.Header.Get("ID")); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+		} else {
+			u.ID = x
 		}
 
-		u := &model.Order{
-			ID:         req.ID,
-			CoffeeType: req.CoffeeType,
+		if x, err := strconv.Atoi(r.Header.Get("CoffeeType")); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+		} else {
+			u.CoffeeType = x
 		}
 
 		MaxCoffeeCnt, err := s.store.User().GetNumbersOfCoffeeByTypeAndUserId(u.ID, u.CoffeeType)
@@ -114,7 +116,7 @@ func (s *server) buyCoffee() http.HandlerFunc {
 		}
 
 		ActualCoffeeCnt, err := s.store.Order().CountCoffeByTypeAndUserId(u.ID, u.CoffeeType)
-		//s.respond(w, r, http.StatusCreated, actualCoffeeCnt) // tmp
+
 		if err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
@@ -122,8 +124,7 @@ func (s *server) buyCoffee() http.HandlerFunc {
 
 		if ActualCoffeeCnt < MaxCoffeeCnt {
 
-			//insert 1 order, response 200 ok
-			if err = s.store.Order().CreateOrder(u, u.CoffeeType); err != nil {
+			if err = s.store.Order().CreateOrder(&u, u.CoffeeType); err != nil {
 				s.error(w, r, http.StatusBadRequest, err)
 				return
 			}
@@ -135,7 +136,7 @@ func (s *server) buyCoffee() http.HandlerFunc {
 				s.error(w, r, http.StatusUnprocessableEntity, err)
 				return
 			}
-			s.respond(w, r, http.StatusTooManyRequests, Timeleft) // insert how much time should wait for next coffe
+			s.respond(w, r, http.StatusTooManyRequests, Timeleft)
 		}
 
 	}
