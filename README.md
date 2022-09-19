@@ -18,3 +18,13 @@ curl --request POST \
   --url http://localhost:8080/buycoffe \
   --header 'CoffeeType: 1' \
   --header 'ID: 1'
+
+#CoffeeType:
+1- espresso
+2-americano
+3-capucino
+
+#membership
+1 - Basic
+2 - Coffeelover
+3 - Espresso Maniac
