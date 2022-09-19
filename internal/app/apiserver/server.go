@@ -107,34 +107,35 @@ func (s *server) buyCoffee() http.HandlerFunc {
 			CoffeeType: req.CoffeeType,
 		}
 
-		maxCoffeeCnt, err := s.store.User().GetNumbersOfCoffeeByTypeAndUserId(u.ID, u.CoffeeType)
+		MaxCoffeeCnt, err := s.store.User().GetNumbersOfCoffeeByTypeAndUserId(u.ID, u.CoffeeType)
 		if err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
 
-		if actualCoffeeCnt, err := s.store.Order().CountCoffeByTypeAndUserId(u.ID, u.CoffeeType);
+		ActualCoffeeCnt, err := s.store.Order().CountCoffeByTypeAndUserId(u.ID, u.CoffeeType)
 		//s.respond(w, r, http.StatusCreated, actualCoffeeCnt) // tmp
-		err != nil {
-			s.error(w, r, http.StatusBadRequest, err)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
 
-		if actualCoffeeCnt < maxCoffeeCnt {
+		if ActualCoffeeCnt < MaxCoffeeCnt {
+
 			//insert 1 order, response 200 ok
-			err := s.store.Order().CreateOrder(u, u.CoffeeType)
-			if err != nil {
-				s.error(w, r, http.StatusUnprocessableEntity, err)
+			if err = s.store.Order().CreateOrder(u, u.CoffeeType); err != nil {
+				s.error(w, r, http.StatusBadRequest, err)
 				return
 			}
 			s.respondCode(w, r, http.StatusOK)
 		} else {
-			timeleft, err := s.store.Order().CheckRemainingTime(u.ID, u.CoffeeType)
+			var Timeleft string
+			Timeleft, err = s.store.Order().CheckRemainingTime(u.ID, u.CoffeeType)
 			if err != nil {
 				s.error(w, r, http.StatusUnprocessableEntity, err)
 				return
 			}
-			s.respond(w, r, http.StatusTooManyRequests, timeleft) // insert how much time should wait for next coffe
+			s.respond(w, r, http.StatusTooManyRequests, Timeleft) // insert how much time should wait for next coffe
 		}
 
 	}
