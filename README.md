@@ -3,8 +3,11 @@
 #Task for Go interview
 
 ##DB
+
 Postgres.
+
 #Create Database
+
 createdb restapi_dev
 
 #For data
